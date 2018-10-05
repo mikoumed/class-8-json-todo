@@ -15,42 +15,38 @@ def parse_date(date_str):
             return datetime.strptime(date_str, format)
         except ValueError:
             pass
-
+    raise InvalidTaskDueDateException()
 
 def parse_int(value):
-    pass
+    try:
+        return int(value)
+    except ValueError:
+        pass
 
 
 def serialize(tasks):
-    new_tasks = []
+    result = []
     for task in tasks:
-        task = task.copy()
-        task['due_on'] = task['due_on'].strftime('%Y-%m-%d %H:%M:%S')
-        new_tasks.append(task)
-    return new_tasks
+        new_task = task.copy()
+        new_task['due_on'] = task['due_on'].strftime('%Y-%m-%d %H:%M:%S')
+        result.append(new_task)
+    return result
 
 
 def unserialize(blob):
-    raw_tasks = json.loads(blob)
-    new_tasks = []
-    for task in raw_tasks:
-        task = task.copy()
-        task['due_on'] = parse_date(task['due_on'])
-        new_tasks.append(task)
-    return new_tasks
+    pass
 
 
 def summary(tasks):
-    summary_obj = {
-        'total': len(tasks),
-        'pending': 0,
-        'done': 0,
+    result = {
+        'total' : len(tasks),
+        'pending' : 0,
+        'done' : 0
     }
+    count = 0
     for task in tasks:
         if task['status'] == 'pending':
-            summary_obj['pending'] += 1
-
-        if task['status'] == 'done':
-            summary_obj['done'] += 1
-
-    return summary_obj
+            result['pending'] += 1
+        elif task['status'] == 'done':
+            result['done'] += 1
+    return result
